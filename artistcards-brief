@@ -1,0 +1,57 @@
+When I visit Museums, I often take photos and write notes about the artists I find most inspiring. 
+These photos essentially languish in my phone, and I'll occasionally revisit them if I'm able to search for a specific artist.
+The objective of artistcards is to start collecting these artists and their works as if they were baseball cards. 
+
+On this MVP page will essentially be a photo gallery of cards (images of the artwork on one side, metadata about the art and artist on the back), but the gallery is a stack of cards. 
+Each card contains the image of the piece, artist name, artist metadata, artist statement or notes, my personal notes. One side of the card is just the image of the piece, the other side of the card contains the metadata. 
+
+I like the idea of having only the one collection of cards. It's just one list of artists and pieces that I love. 
+
+The intent of this page is just to be display only. I will have some way to programmatically add cards to the stack of my choosing, but only I will have permission to add cards. People can puruse my cards by visiting the website, but they will not be able to add their own or make edits. 
+
+##Cards
+Stacked cards have an image only side, and a metadata side.
+The image-only side provides just the image of the art piece with some interactive buttons to help with navigation. 
+
+Information about where the image was taken, the name of the piece, the artist name, and notes written by me when I posted the card will appear along side the stack. 
+On the other side of the stack, the person will be able to see a counter of all the cards. It will show the sequence order number of the card against the total number of cards. 
+As the person browses through the stack, this number will update to show the person where in the sequence they're at. 
+
+##Interactions
+I can interact with this stack of cards by clicking the card. When I click the card, the card navigates to the back of the stack. The card beneath it will become visible. 
+When the person is looking at the side of the card that is just the image of the art piece, they can click anywhere in the card to move the top card to back. 
+They can also use the arrow keys. Right arrow shows the next card in the stack, and moves the top card to the back. Left arrow reverses the direction, and brings cards from the back of the stack to the front.
+An icon like Lucide's 'send-to-back' icon (https://lucide.dev/icons/send-to-back), signals to a person that they can bring a card from the back to the front. This will be especially useful if they're on a mobile device.
+
+Users can turn over the card to see the back. 
+On the top right corner of the card, an icon with a right arrow (Lucide's redo 2 https://lucide.dev/icons/redo-2) indicates where a person can select to turn over the card. 
+The hotkey for this is 'enter'. 
+When a user turns the card over, metadata about the artist and the piece will be visible. 
+When the card is in this state, they can continue to use the arrows and navigate through the stack. The cards will all be flipped to the metadata side in this case. 
+A person can use 'esc' to return the card to the side of the card with just the artpiece. 
+
+##Card Metadata Interactions
+
+There are icons on the information side of the card for people to interact with. 
+Email icon - copies my email for people to get in touch - hello@bytomo.com
+Instagram icon - links the user to farfromthis instagram (https://www.instagram.com/farfromthis/)
+Link icon - copies the URL which will ideally copy the URL to the exact card in the stack. 
+
+
+Hover states for these iconsL
+Email icon - Copy my email address to ask questions
+Instagram icon - Visit the Far From This instagram
+Link icon - URL to this exact card
+
+
+
+#Search
+There is a basic fuzzy find search capability that will help surface cards from the stack for me to quickly jump to. 
+
+
+##Adding a new card
+This workflow is TBD. I'll try and provide metadata about cards in the files for now. 
+
+##Deleting a card
+This workflow is TBD. I might just be able to get by with deleting these programmatically.
+
