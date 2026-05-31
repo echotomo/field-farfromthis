@@ -1,0 +1,1085 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FIELD.FARFROMTHIS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f7f5f0;
+      --fg: #1a1a1a;
+      --fg-muted: #888;
+      --fg-subtle: #bbb;
+      --border: rgba(0,0,0,0.1);
+      --accent: #c8522a;
+      --pill-bg: #e2e6ea;
+      --pill-fg: #333;
+      --card-w: 580px;
+      --card-h: 430px;
+      --serif: 'Jost', sans-serif;
+      --mono: 'DM Mono', monospace;
+      --h1: 700 24px/1.2 var(--serif);
+      --h2: 600 20px/1.2 var(--serif);
+      --h3: 600 12px/1.2 var(--serif);
+      --h4: 400 12px/1.4 var(--mono);
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--mono);
+      font-size: 13px;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px;
+      z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .btn-add {
+      display: flex; align-items: center; gap: 6px;
+      font: var(--h4);
+      letter-spacing: 0.03em;
+      color: var(--fg);
+      background: none;
+      border: 1px solid rgba(0,0,0,0.22);
+      border-radius: 20px;
+      padding: 5px 12px;
+      cursor: default;
+      opacity: 0.45;
+      white-space: nowrap;
+    }
+
+    .site-title {
+      position: absolute; left: 50%; transform: translateX(-50%);
+      font: 700 13px/1 var(--serif);
+      letter-spacing: 0.14em;
+    }
+
+    .header-right {
+      display: flex; align-items: center; gap: 16px;
+    }
+    .header-right button {
+      background: none; border: none; cursor: pointer;
+      font: var(--h4);
+      letter-spacing: 0.08em;
+      color: var(--fg-muted);
+      display: flex; align-items: center; gap: 5px;
+      padding: 4px;
+      transition: color 0.15s;
+      white-space: nowrap;
+    }
+    .header-right button:hover, .header-right button.active { color: var(--fg); }
+    .header-right button svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+    /* ─── SEARCH OVERLAY ─── */
+    .search-overlay {
+      position: fixed; inset: 0;
+      background: rgba(247,245,240,0.97);
+      z-index: 200;
+      display: flex; flex-direction: column; align-items: center;
+      padding-top: 120px;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .search-overlay.open { opacity: 1; pointer-events: all; }
+
+    .search-input-wrap {
+      width: min(480px, 90vw);
+      border-bottom: 1.5px solid var(--fg);
+      display: flex; align-items: center; gap: 12px;
+      padding-bottom: 12px;
+    }
+    .search-input-wrap svg { width: 18px; height: 18px; color: var(--fg-muted); flex-shrink: 0; }
+    .search-input-wrap input {
+      flex: 1; background: none; border: none; outline: none;
+      font: 600 22px/1 var(--serif);
+      color: var(--fg);
+    }
+    .search-input-wrap input::placeholder { color: var(--fg-subtle); font-weight: 400; }
+
+    .search-results {
+      width: min(480px, 90vw);
+      margin-top: 20px;
+      display: flex; flex-direction: column; gap: 2px;
+    }
+    .search-result-item {
+      display: flex; align-items: center; gap: 14px;
+      padding: 10px 12px; cursor: pointer; border-radius: 4px;
+      transition: background 0.1s;
+    }
+    .search-result-item:hover { background: rgba(0,0,0,0.04); }
+    .search-result-item img { width: 40px; height: 30px; object-fit: cover; border-radius: 2px; }
+    .search-result-name { font: var(--h3); margin-bottom: 2px; }
+    .search-result-artist { font: var(--h4); color: var(--fg-muted); }
+
+    .search-close {
+      position: absolute; top: 18px; right: 22px;
+      background: none; border: none; cursor: pointer; color: var(--fg-muted);
+      transition: color 0.15s;
+    }
+    .search-close:hover { color: var(--fg); }
+    .search-close svg { width: 20px; height: 20px; }
+
+    /* ─── SEARCH SIDE BTN ─── */
+    .search-side-btn {
+      position: fixed; top: 64px; left: 22px;
+      background: none; border: none; cursor: pointer;
+      color: var(--fg-muted); z-index: 90; padding: 4px;
+      transition: color 0.15s;
+    }
+    .search-side-btn:hover { color: var(--fg); }
+    .search-side-btn svg { width: 18px; height: 18px; }
+
+    /* ─── DESKTOP STAGE ─── */
+    .stage {
+      position: fixed;
+      inset: 48px 0 0 0;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .meta-sidebar {
+      position: absolute;
+      left: calc(50% - var(--card-w)/2 - 260px);
+      top: 50%; transform: translateY(-50%);
+      width: 220px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .meta-sidebar .piece-title { font: var(--h1); }
+    .meta-sidebar .artist-link {
+      font: var(--h3);
+      color: var(--fg); text-decoration: none;
+      display: flex; align-items: center; gap: 4px;
+      letter-spacing: 0.02em;
+    }
+    .meta-sidebar .artist-link:hover { color: var(--accent); }
+    .meta-row {
+      display: flex; align-items: flex-start; gap: 7px;
+      font: var(--h4); color: var(--fg-muted); line-height: 1.5;
+    }
+    .meta-row svg { width: 11px; height: 11px; flex-shrink: 0; margin-top: 2px; }
+    .notes-label { font: var(--h3); color: var(--fg-muted); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 4px; }
+    .notes-text { font: italic 12px/1.6 Georgia, serif; color: var(--fg); }
+
+    .counter {
+      position: absolute;
+      right: calc(50% - var(--card-w)/2 - 110px);
+      top: 50%; transform: translateY(-50%);
+      font: var(--h1); font-size: 26px;
+      white-space: nowrap;
+    }
+
+    /* ─── CARD STACK ─── */
+    .card-stack {
+      position: relative;
+      width: var(--card-w);
+      height: var(--card-h);
+    }
+
+    .card {
+      position: absolute; inset: 0;
+      width: var(--card-w); height: var(--card-h);
+      border-radius: 5px;
+      transform-style: preserve-3d;
+      perspective: 1200px;
+      transition: transform 0.45s cubic-bezier(0.4,0,0.2,1);
+      will-change: transform;
+      user-select: none;
+    }
+
+    .card.top    { z-index: 10; box-shadow: 0 4px 8px rgba(0,0,0,0.1), 0 16px 40px rgba(0,0,0,0.15); }
+    .card.behind1{ z-index: 9;  transform: translateX(8px) translateY(-6px) rotate(1.5deg);  box-shadow: 0 2px 4px rgba(0,0,0,0.07), 0 8px 20px rgba(0,0,0,0.1); }
+    .card.behind2{ z-index: 8;  transform: translateX(14px) translateY(-11px) rotate(2.8deg); box-shadow: 0 2px 4px rgba(0,0,0,0.05), 0 6px 14px rgba(0,0,0,0.07); }
+    .card.top.flipped { transform: rotateY(180deg); }
+
+    .card-face {
+      position: absolute; inset: 0;
+      border-radius: 5px;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      overflow: hidden;
+    }
+
+    .card-front { background: #111; cursor: pointer; }
+    .card-front img { width: 100%; height: 100%; object-fit: cover; display: block; pointer-events: none; }
+
+    .card-icon-btn {
+      position: absolute;
+      background: rgba(255,255,255,0.16);
+      border: none; border-radius: 50%;
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: white;
+      backdrop-filter: blur(6px);
+      transition: background 0.15s;
+      z-index: 2;
+    }
+    .card-icon-btn:hover { background: rgba(255,255,255,0.28); }
+    .card-icon-btn svg { width: 14px; height: 14px; pointer-events: none; }
+    .btn-send-back { top: 12px; left: 12px; }
+    .btn-flip      { top: 12px; right: 12px; }
+
+    /* ─── CARD BACK ─── */
+    .card-back {
+      background: white;
+      transform: rotateY(180deg);
+      display: flex; flex-direction: column;
+    }
+
+    .cb-header {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .cb-thumb { width: 52px; height: 40px; object-fit: cover; border-radius: 3px; flex-shrink: 0; }
+    .cb-title-block { flex: 1; min-width: 0; }
+    .cb-piece-name { font: var(--h1); font-size: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .cb-artist { font: var(--h3); color: var(--fg-muted); margin-top: 3px; }
+    .cb-artist a { color: inherit; text-decoration: none; }
+    .cb-artist a:hover { color: var(--accent); }
+    .cb-counter { font: var(--h1); font-size: 15px; white-space: nowrap; flex-shrink: 0; }
+    .cb-share {
+      background: none; border: none; cursor: pointer;
+      color: var(--fg-muted); padding: 4px; flex-shrink: 0;
+      transition: color 0.15s;
+    }
+    .cb-share:hover { color: var(--fg); }
+    .cb-share svg { width: 14px; height: 14px; display: block; }
+
+    .cb-body {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 1fr 1px 1fr;
+      overflow: hidden;
+      min-height: 0;
+    }
+
+    .cb-col {
+      padding: 14px 18px;
+      overflow-y: auto;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .cb-col::-webkit-scrollbar { width: 3px; }
+    .cb-col::-webkit-scrollbar-thumb { background: var(--fg-subtle); border-radius: 2px; }
+
+    .cb-divider { background: var(--border); }
+
+    .cb-section-label { font: var(--h3); letter-spacing: 0.1em; text-transform: uppercase; }
+    .cb-date-created { font: var(--h4); color: var(--fg-muted); margin-bottom: 2px; }
+    .cb-about-text { font: var(--h4); line-height: 1.7; color: var(--fg); }
+    .cb-notes-text { font: italic 11px/1.7 Georgia, serif; color: var(--fg); }
+
+    .cb-learn-more {
+      font: var(--h4); color: var(--accent);
+      text-decoration: none; display: flex; align-items: center; gap: 3px;
+      margin-top: auto; padding-top: 6px;
+    }
+    .cb-learn-more:hover { text-decoration: underline; }
+    .cb-learn-more svg { width: 10px; height: 10px; }
+
+    .cb-additional-links { display: flex; flex-direction: column; gap: 6px; margin-top: 4px; }
+    .cb-pill {
+      display: inline-flex; align-items: center; gap: 4px;
+      background: var(--pill-bg); color: var(--pill-fg);
+      font: var(--h4);
+      padding: 5px 10px; border-radius: 4px;
+      text-decoration: none; width: fit-content;
+      transition: background 0.15s;
+    }
+    .cb-pill:hover { background: #cdd3d9; }
+
+    .cb-footer {
+      border-top: 1px solid var(--border);
+      padding: 10px 18px;
+      display: flex; align-items: center; gap: 16px;
+      flex-shrink: 0;
+    }
+
+    .footer-icon-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--fg-muted); padding: 4px;
+      display: flex; align-items: center;
+      transition: color 0.15s;
+      position: relative;
+    }
+    .footer-icon-btn:hover { color: var(--fg); }
+    .footer-icon-btn svg { width: 14px; height: 14px; }
+
+    /* tooltip — rendered outside card to avoid overflow clipping */
+    .global-tooltip {
+      position: fixed;
+      background: var(--fg); color: var(--bg);
+      font: var(--h4); letter-spacing: 0.04em;
+      white-space: nowrap; padding: 4px 9px;
+      border-radius: 3px;
+      pointer-events: none;
+      opacity: 0; transition: opacity 0.15s;
+      z-index: 500;
+    }
+    .global-tooltip.show { opacity: 1; }
+
+    /* ─── NAV ARROWS ─── */
+    .nav-arrows {
+      position: absolute;
+      bottom: -52px; left: 0; right: 0;
+      display: flex; justify-content: center; gap: 14px;
+    }
+    .nav-arrow {
+      background: none; border: 1px solid rgba(0,0,0,0.18);
+      border-radius: 50%; width: 36px; height: 36px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--fg-muted);
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .nav-arrow:hover { color: var(--fg); border-color: rgba(0,0,0,0.35); }
+    .nav-arrow svg { width: 15px; height: 15px; }
+
+    /* ─── TOAST ─── */
+    .toast {
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%) translateY(16px);
+      background: var(--fg); color: var(--bg);
+      font: var(--h4); letter-spacing: 0.06em;
+      padding: 7px 16px; border-radius: 20px;
+      opacity: 0; transition: opacity 0.2s, transform 0.2s;
+      pointer-events: none; z-index: 400;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+    /* ─── KBD HINT ─── */
+    .kbd-hint {
+      position: fixed; bottom: 20px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; gap: 18px;
+      font: var(--h4); color: var(--fg-subtle); letter-spacing: 0.05em;
+    }
+    .kbd-hint span { display: flex; align-items: center; gap: 5px; }
+    kbd {
+      background: rgba(0,0,0,0.07); border: 1px solid rgba(0,0,0,0.12);
+      border-radius: 3px; padding: 1px 5px;
+      font-family: var(--mono); font-size: 10px;
+    }
+
+    /* ─── EXIT ANIMATIONS ─── */
+    @keyframes exitLeft  { to { transform: translateX(-110px) scale(0.93); opacity: 0; } }
+    @keyframes exitRight { to { transform: translateX(110px) scale(0.93); opacity: 0; } }
+    .exit-left  { animation: exitLeft  0.26s ease forwards; }
+    .exit-right { animation: exitRight 0.26s ease forwards; }
+
+    /* ─── MOBILE ─── */
+    @media (max-width: 768px) {
+      body { overflow: auto; }
+
+      .stage { display: none; }
+      .search-side-btn { display: none; }
+      .kbd-hint { display: none; }
+
+      .mobile-view {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        padding-top: 48px;
+      }
+
+      .mobile-nav {
+        display: flex; justify-content: center; gap: 28px;
+        padding: 10px 0;
+        border-bottom: 1px solid var(--border);
+        background: var(--bg);
+      }
+      .mobile-nav button {
+        background: none; border: none; cursor: pointer;
+        font: var(--h4); letter-spacing: 0.1em;
+        color: var(--fg-muted);
+        display: flex; align-items: center; gap: 5px;
+        padding: 4px 8px;
+        transition: color 0.15s;
+      }
+      .mobile-nav button.active { color: var(--fg); }
+      .mobile-nav button svg { width: 13px; height: 13px; }
+
+      .mobile-stack-view { display: block; }
+      .mobile-detail-view { display: none; }
+
+      .mobile-stack-view.hidden { display: none; }
+      .mobile-detail-view.visible { display: block; }
+
+      /* stack scene */
+      .mobile-stack-scene {
+        display: flex; align-items: center; justify-content: center;
+        padding: 32px 20px 24px;
+        background: var(--bg);
+      }
+
+      .mobile-card-wrap {
+        position: relative;
+        width: calc(100vw - 60px);
+        max-width: 380px;
+        aspect-ratio: 4/3;
+      }
+
+      .mobile-card {
+        position: absolute; inset: 0;
+        border-radius: 5px;
+        overflow: hidden;
+        background: #111;
+      }
+      .mobile-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+      .mobile-card.behind1 {
+        transform: translateX(8px) translateY(-6px) rotate(1.8deg);
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        z-index: 1;
+      }
+      .mobile-card.behind2 {
+        transform: translateX(14px) translateY(-11px) rotate(3.2deg);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.07);
+        z-index: 0;
+      }
+      .mobile-card.top-card {
+        box-shadow: 0 4px 20px rgba(0,0,0,0.18);
+        z-index: 2;
+        cursor: pointer;
+      }
+
+      .mobile-card .card-icon-btn { width: 28px; height: 28px; }
+      .mobile-card .card-icon-btn svg { width: 12px; height: 12px; }
+
+      /* mobile meta below stack */
+      .mobile-meta {
+        padding: 20px 20px 12px;
+        border-bottom: 1px solid var(--border);
+      }
+      .mobile-meta .piece-title { font: var(--h1); margin-bottom: 4px; }
+      .mobile-meta .artist-link {
+        font: var(--h3); color: var(--fg); text-decoration: none;
+        display: flex; align-items: center; gap: 4px; margin-bottom: 10px;
+      }
+      .mobile-meta .artist-link:hover { color: var(--accent); }
+      .mobile-meta .meta-row {
+        font: var(--h4); color: var(--fg-muted);
+        display: flex; align-items: flex-start; gap: 7px;
+        margin-bottom: 4px; line-height: 1.5;
+      }
+      .mobile-meta .meta-row svg { width: 11px; height: 11px; flex-shrink: 0; margin-top: 2px; }
+      .mobile-meta .notes-label { font: var(--h3); letter-spacing: 0.08em; text-transform: uppercase; margin: 10px 0 4px; }
+      .mobile-meta .notes-text { font: italic 13px/1.6 Georgia, serif; color: var(--fg); }
+
+      /* mobile flipped = detail view */
+      .mobile-detail {
+        padding: 0 0 80px;
+      }
+
+      .mobile-detail-section {
+        padding: 18px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex; flex-direction: column; gap: 10px;
+      }
+
+      .mobile-detail-section .cb-section-label { font: var(--h3); letter-spacing: 0.1em; text-transform: uppercase; }
+      .mobile-detail-section .cb-date-created { font: var(--h4); color: var(--fg-muted); }
+      .mobile-detail-section .cb-about-text { font: var(--h4); line-height: 1.7; }
+      .mobile-detail-section .cb-notes-text { font: italic 13px/1.7 Georgia, serif; }
+      .mobile-detail-section .cb-learn-more {
+        font: var(--h4); color: var(--accent); text-decoration: none;
+        display: flex; align-items: center; gap: 4px;
+      }
+      .mobile-detail-section .cb-learn-more:hover { text-decoration: underline; }
+      .mobile-detail-section .cb-additional-links { display: flex; flex-direction: column; gap: 6px; }
+      .mobile-detail-section .cb-pill {
+        display: inline-flex; align-items: center; gap: 4px;
+        background: var(--pill-bg); color: var(--pill-fg);
+        font: var(--h4); padding: 6px 12px; border-radius: 4px;
+        text-decoration: none; width: fit-content;
+        transition: background 0.15s;
+      }
+      .mobile-detail-section .cb-pill:hover { background: #cdd3d9; }
+
+      /* mobile detail header (mini) */
+      .mobile-detail-header {
+        display: flex; align-items: center; gap: 12px;
+        padding: 14px 20px;
+        border-bottom: 1px solid var(--border);
+        position: sticky; top: 48px; background: white; z-index: 10;
+      }
+      .mobile-detail-header img { width: 48px; height: 36px; object-fit: cover; border-radius: 3px; }
+      .mobile-detail-header .piece-name { font: var(--h2); }
+      .mobile-detail-header .artist-sm { font: var(--h4); color: var(--fg-muted); margin-top: 2px; }
+      .mobile-detail-header .dh-right { margin-left: auto; font: var(--h2); white-space: nowrap; }
+
+      /* mobile footer */
+      .mobile-footer {
+        position: fixed; bottom: 0; left: 0; right: 0;
+        background: white; border-top: 1px solid var(--border);
+        padding: 10px 20px;
+        display: flex; align-items: center; gap: 18px;
+        z-index: 50;
+      }
+      .mobile-footer .footer-icon-btn svg { width: 18px; height: 18px; }
+      .mobile-back-btn {
+        margin-left: auto;
+        background: none; border: 1px solid var(--border);
+        border-radius: 20px; padding: 5px 14px;
+        font: var(--h4); cursor: pointer; color: var(--fg-muted);
+        transition: color 0.15s, border-color 0.15s;
+      }
+      .mobile-back-btn:hover { color: var(--fg); border-color: rgba(0,0,0,0.3); }
+    }
+
+    /* hide mobile on desktop */
+    @media (min-width: 769px) {
+      .mobile-view { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <button class="btn-add">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Add to stack
+  </button>
+  <div class="site-title">FIELD.FARFROMTHIS</div>
+  <div class="header-right">
+    <button id="btnSearchHeader">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      SEARCH
+    </button>
+    <button class="active">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="6" height="18" rx="1"/><rect x="9" y="3" width="13" height="18" rx="1"/></svg>
+      STACK
+    </button>
+  </div>
+</header>
+
+<!-- SEARCH OVERLAY -->
+<div class="search-overlay" id="searchOverlay">
+  <div class="search-input-wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    <input type="text" id="searchInput" placeholder="Search artists or works…" autocomplete="off">
+  </div>
+  <div class="search-results" id="searchResults"></div>
+  <button class="search-close" id="searchClose">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+  </button>
+</div>
+
+<!-- SEARCH SIDE BTN (desktop) -->
+<button class="search-side-btn" id="btnSearchSide">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+</button>
+
+<!-- DESKTOP STAGE -->
+<div class="stage">
+  <div class="meta-sidebar" id="metaSidebar"></div>
+  <div class="card-stack" id="cardStack">
+    <div class="nav-arrows">
+      <button class="nav-arrow" id="btnPrev">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+      </button>
+      <button class="nav-arrow" id="btnNext">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+      </button>
+    </div>
+  </div>
+  <div class="counter" id="counter"></div>
+</div>
+
+<!-- MOBILE VIEW -->
+<div class="mobile-view" id="mobileView">
+  <div class="mobile-nav">
+    <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg> FULL</button>
+    <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> MAP</button>
+    <button class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg> STACK</button>
+  </div>
+
+  <!-- STACK VIEW -->
+  <div class="mobile-stack-view" id="mobileStackView">
+    <div class="mobile-stack-scene">
+      <div class="mobile-card-wrap" id="mobileCardWrap"></div>
+    </div>
+    <div class="mobile-meta" id="mobileMeta"></div>
+  </div>
+
+  <!-- DETAIL VIEW (flipped) -->
+  <div class="mobile-detail-view" id="mobileDetailView">
+    <div class="mobile-detail-header" id="mobileDetailHeader"></div>
+    <div class="mobile-detail" id="mobileDetail"></div>
+  </div>
+
+  <!-- MOBILE FOOTER -->
+  <div class="mobile-footer" id="mobileFooter"></div>
+</div>
+
+<!-- GLOBAL TOOLTIP -->
+<div class="global-tooltip" id="globalTooltip"></div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- KBD HINT -->
+<div class="kbd-hint">
+  <span><kbd>←</kbd><kbd>→</kbd> navigate</span>
+  <span><kbd>Enter</kbd> flip</span>
+  <span><kbd>Esc</kbd> unflip</span>
+  <span><kbd>/</kbd> search</span>
+</div>
+
+<script>
+const CARDS = [
+  {
+    id: 1,
+    image: "images/image-1-haring.png",
+    title: "Crack is Wack",
+    year: "1986",
+    artist: "Keith Haring",
+    artistUrl: "https://www.haring.com/!/art-work/108-2",
+    location: "Bronx, New York, NY",
+    date: "May 9, 2022",
+    about: "Crack is Wack Playground earned its distinctive name after artist Keith Haring (1958–1990) painted the now-famous Crack Is Wack mural in 1986 on the handball court walls. The mural, done in Haring's signature style of thick black outlines, bright colors and intermingling, cartoon-like bodies, was painted to send a serious anti-drug message to the community.\n\nHaring painted this playground's mural on October 3, 1986 to call attention to the damage drugs can inflict on community welfare. He continued to create murals, sculptures, drawings, and paintings until he died of AIDS on February 16, 1990, at the age of 32. His artwork is highly prized throughout the world. The Keith Haring Foundation continues to educate the public about Haring's life and work and raises money for children's and AIDS charities.",
+    notes: "I saw this piece on my way upstate. I really needed to visit it in person. I found a bike path that carried me through Williamsburg, Manhattan, and into the Bronx. It was the first experience I had riding my bike through the area.",
+    learnMore: "https://www.nycgovparks.org/parks/crack-is-wack-playground/history",
+    additionalLinks: "https://www.haring.com/!/art-work/108-2"
+  },
+  {
+    id: 2,
+    image: "images/image-2-jackson.png",
+    title: "Lizards",
+    year: "2005",
+    artist: "Suzanne Jackson",
+    artistUrl: "https://www.walkerart.org/whats-on/suzanne-jackson-what-is-love/",
+    location: "Walker Museum",
+    date: "May 24, 2026",
+    about: "What Is Love traces painter Suzanne Jackson's (US, b. 1944) lifelong devotion to beauty as a political force. As the first major museum retrospective devoted to the artist's career, the exhibition spans six decades of work and highlights her evolving engagement with poetry, dance, and theater.\n\nAt the center of Jackson's practice is a dedication to both the earthly and spiritual dimensions of love. Her joyful experimentations with color, light, and materiality refuse stereotypical notions of Blackness, insisting instead on complexity and tenderness.",
+    notes: "This exhibition captured the evolution of Suzanne Jackson's life's work from distinctive human figures to post-canvas, suspended pigments and ephemera. Loved ones, history, and memories seemed to melt into amorphic sculpture. I was moved by the transformations of her memories.",
+    learnMore: "https://www.walkerart.org/whats-on/suzanne-jackson-what-is-love/",
+    additionalLinks: "https://www.walkerart.org/whats-on/suzanne-jackson-what-is-love-opening-day-talk/"
+  },
+  {
+    id: 3,
+    image: "images/image-3-mobarak.png",
+    title: "Recto Verso 1.3",
+    year: "2026",
+    artist: "Nour Mobarak",
+    artistUrl: "https://miguelabreugallery.com/exhibitions/recto-verso/",
+    location: "Whitney Museum",
+    date: "April 10, 2026",
+    about: "To create the relief sculptures on view here, Nour Mobarak made casts of her body using resin, a synthetic material, and mycelium, the root-like structure of a fungus. Her series Recto Verso reduces the body to a form — a vehicle for exploring light, color, and space.\n\nIn Reproductive Logistics 4, Mobarak uses a cast of her pregnant body as a lens through which the room and bodies within it are mirrored, flipped, and distorted. She conceived the work as a meditation on how factors beyond our control can determine biological reproduction as well as artistic creation.",
+    notes: "I just saw a blood clot and it was instantly my favorite piece at the biennale.",
+    learnMore: "https://whitney.org/exhibitions/2026-biennial/art",
+    additionalLinks: "https://miguelabreugallery.com/exhibitions/recto-verso/"
+  },
+  {
+    id: 4,
+    image: "images/image-4-halaby.png",
+    title: "Bird Dog",
+    year: "1980s",
+    artist: "Samia Halaby",
+    artistUrl: "https://samiahalaby.com/digital/",
+    location: "Whitney Museum",
+    date: "April 10, 2026",
+    about: "In the 1980s — three decades into her career as an abstract painter — Samia Halaby observed that the most historically ambitious paintings had always used the technology of their time and began to use a personal computer in her own work. After teaching herself BASIC and C, Halaby used a Commodore Amiga 1000 to create what she calls \"kinetic paintings.\" She continues programming to explore the motion, light, and transformation that much abstract art has long suggested.",
+    notes: "I loved how Halaby embraced the technology of the day to explore how her art would manifest.",
+    learnMore: "https://whitney.org/exhibitions/2026-biennial/art?section=25",
+    additionalLinks: "https://samiahalaby.com/digital/"
+  },
+  {
+    id: 5,
+    image: "images/image-5-klint.png",
+    title: "The Ten Largest, No. 6, Adulthood, Group IV",
+    year: "1907",
+    artist: "Hilma af Klint",
+    artistUrl: "https://www.guggenheim.org/exhibition/hilma-af-klint",
+    location: "Guggenheim Museum",
+    date: "April 10, 2026",
+    about: "Hilma is often sensationalized as a mystical hermit artist who spoke to ghosts, or as the inventor of abstract art — both of which do a disservice to an artist who worked with such intentionality and purpose throughout her life.\n\nHilma's interest in the unseen, science, religion, clairvoyance, and meditation would lead her to find the connective threads between representation and abstraction. The Ten Largest — ten giant, powerful, and vibrant paintings — have a universal message everyone can connect to.",
+    notes: "I went to this exhibit at the Guggenheim with Marissa and it was a beautiful night.",
+    learnMore: "https://www.guggenheim.org/exhibition/hilma-af-klint",
+    additionalLinks: "https://www.artslicepod.com/episodes/the-ten-largest-hilma-af-klint"
+  }
+];
+
+let idx = 0;
+let flipped = false;
+let busy = false;
+const total = CARDS.length;
+
+function mod(n, m) { return ((n % m) + m) % m; }
+
+function domainLabel(url) {
+  try {
+    const h = new URL(url).hostname.replace(/^www\./, '');
+    return h + ' →';
+  } catch { return url; }
+}
+
+function pillsHTML(linksStr) {
+  if (!linksStr || !linksStr.trim()) return '';
+  const links = linksStr.split('|').map(s => s.trim()).filter(Boolean);
+  return links.map(url => `<a href="${url}" target="_blank" class="cb-pill">${domainLabel(url)}</a>`).join('');
+}
+
+function aboutHTML(text) {
+  return text.split('\n\n').map(p => `<p style="margin-bottom:8px;last-child{margin-bottom:0}">${p}</p>`).join('');
+}
+
+// ─── DESKTOP CARD ───
+function buildCard(cardData, role) {
+  const div = document.createElement('div');
+  div.className = `card ${role}`;
+
+  const pills = pillsHTML(cardData.additionalLinks);
+  const additionalSection = pills ? `
+    <div class="cb-section-label" style="margin-top:8px">ADDITIONAL LINKS</div>
+    <div class="cb-additional-links">${pills}</div>
+  ` : '';
+
+  div.innerHTML = `
+    <div class="card-face card-front">
+      <img src="${cardData.image}" alt="${cardData.title}">
+      <button class="card-icon-btn btn-send-back" data-tip="Next card">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+      </button>
+      <button class="card-icon-btn btn-flip" data-tip="Flip card (Enter)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 014-4h12"/></svg>
+      </button>
+    </div>
+    <div class="card-face card-back">
+      <div class="cb-header">
+        <img class="cb-thumb" src="${cardData.image}" alt="">
+        <div class="cb-title-block">
+          <div class="cb-piece-name">${cardData.title}</div>
+          <div class="cb-artist"><a href="${cardData.artistUrl}" target="_blank">${cardData.artist} →</a></div>
+        </div>
+        <div class="cb-counter">${CARDS.indexOf(cardData)+1}/${total}</div>
+        <button class="cb-share" data-tip="Share this card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+        </button>
+      </div>
+      <div class="cb-body">
+        <div class="cb-col">
+          <div class="cb-section-label">ABOUT</div>
+          <div class="cb-date-created">Date Created: ${cardData.year}</div>
+          <div class="cb-about-text">${aboutHTML(cardData.about)}</div>
+          <a href="${cardData.learnMore}" target="_blank" class="cb-learn-more">Learn More →</a>
+        </div>
+        <div class="cb-divider"></div>
+        <div class="cb-col">
+          <div class="cb-section-label">WHY I LIKED IT</div>
+          <div class="cb-notes-text">${cardData.notes}</div>
+          ${additionalSection}
+        </div>
+      </div>
+      <div class="cb-footer">
+        <button class="footer-icon-btn" data-action="email" data-tip="Copy email to ask questions">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+        </button>
+        <button class="footer-icon-btn" data-action="instagram" data-tip="Visit Far From This instagram">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+        </button>
+        <button class="footer-icon-btn" data-action="link" data-cardid="${cardData.id}" data-tip="Copy link to this card">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+        </button>
+      </div>
+    </div>
+  `;
+
+  div.querySelector('.card-front').addEventListener('click', e => {
+    if (e.target.closest('.card-icon-btn')) return;
+    if (role === 'top' && !flipped) go(1);
+  });
+  div.querySelector('.btn-send-back').addEventListener('click', e => { e.stopPropagation(); if (role === 'top') go(1); });
+  div.querySelector('.btn-flip').addEventListener('click', e => { e.stopPropagation(); if (role === 'top') doFlip(); });
+  div.querySelector('.cb-share').addEventListener('click', e => { e.stopPropagation(); copyLink(cardData.id); });
+
+  div.querySelectorAll('.footer-icon-btn').forEach(btn => {
+    btn.addEventListener('click', e => {
+      e.stopPropagation();
+      const a = btn.dataset.action;
+      if (a === 'email') { navigator.clipboard.writeText('hello@bytomo.com'); showToast('Email copied'); }
+      else if (a === 'instagram') window.open('https://www.instagram.com/farfromthis/', '_blank');
+      else if (a === 'link') copyLink(btn.dataset.cardid);
+    });
+  });
+
+  // global tooltip
+  div.querySelectorAll('[data-tip]').forEach(el => {
+    el.addEventListener('mouseenter', e => {
+      const tip = document.getElementById('globalTooltip');
+      tip.textContent = el.dataset.tip;
+      const r = el.getBoundingClientRect();
+      tip.style.left = (r.left + r.width/2) + 'px';
+      tip.style.top = (r.top - 32) + 'px';
+      tip.style.transform = 'translateX(-50%)';
+      tip.classList.add('show');
+    });
+    el.addEventListener('mouseleave', () => {
+      document.getElementById('globalTooltip').classList.remove('show');
+    });
+  });
+
+  return div;
+}
+
+function copyLink(cardId) {
+  const url = location.href.split('?')[0] + '?card=' + cardId;
+  navigator.clipboard.writeText(url);
+  showToast('Link copied');
+}
+
+function render() {
+  const stack = document.getElementById('cardStack');
+  stack.querySelectorAll('.card').forEach(c => c.remove());
+  ['behind2','behind1','top'].forEach((role, i) => {
+    const el = buildCard(CARDS[mod(idx + (2-i), total)], role);
+    stack.insertBefore(el, stack.querySelector('.nav-arrows'));
+  });
+  updateMeta();
+  updateCounter();
+  renderMobile();
+}
+
+function go(dir) {
+  if (busy) return;
+  busy = true;
+  const top = document.querySelector('.card.top');
+  top.classList.add(dir === 1 ? 'exit-left' : 'exit-right');
+  setTimeout(() => {
+    idx = mod(idx + dir, total);
+    flipped = false;
+    render();
+    busy = false;
+  }, 240);
+}
+
+function doFlip() {
+  flipped = !flipped;
+  document.querySelector('.card.top')?.classList.toggle('flipped', flipped);
+}
+
+function updateMeta() {
+  const c = CARDS[idx];
+  document.getElementById('metaSidebar').innerHTML = `
+    <div class="piece-title">${c.title}</div>
+    <a href="${c.artistUrl}" target="_blank" class="artist-link">${c.artist} →</a>
+    <div class="meta-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      ${c.location}
+    </div>
+    <div class="meta-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      ${c.date}
+    </div>
+    <div class="notes-label">NOTES</div>
+    <div class="notes-text">${CARDS[idx].notes}</div>
+  `;
+}
+
+function updateCounter() {
+  document.getElementById('counter').textContent = `${idx + 1}/${total}`;
+}
+
+// ─── MOBILE RENDER ───
+function renderMobile() {
+  const c = CARDS[idx];
+
+  // stack scene
+  const wrap = document.getElementById('mobileCardWrap');
+  wrap.innerHTML = '';
+  ['behind2','behind1','top-card'].forEach((role, i) => {
+    const cd = CARDS[mod(idx + (2-i), total)];
+    const div = document.createElement('div');
+    div.className = `mobile-card ${role}`;
+    div.innerHTML = `<img src="${cd.image}" alt="${cd.title}">`;
+    if (role === 'top-card') {
+      div.innerHTML += `
+        <button class="card-icon-btn btn-send-back" style="top:10px;left:10px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
+        </button>
+        <button class="card-icon-btn btn-flip" style="top:10px;right:10px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 014-4h12"/></svg>
+        </button>
+      `;
+      div.querySelector('.btn-send-back').addEventListener('click', e => { e.stopPropagation(); mobileGo(1); });
+      div.querySelector('.btn-flip').addEventListener('click', e => { e.stopPropagation(); mobileFlip(); });
+      div.addEventListener('click', () => mobileGo(1));
+    }
+    wrap.appendChild(div);
+  });
+
+  // meta below stack
+  document.getElementById('mobileMeta').innerHTML = `
+    <div class="piece-title">${c.title}</div>
+    <a href="${c.artistUrl}" target="_blank" class="artist-link">${c.artist} →</a>
+    <div class="meta-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
+      ${c.location}
+    </div>
+    <div class="meta-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      ${c.date}
+    </div>
+    <div class="notes-label">NOTES</div>
+    <div class="notes-text">${c.notes}</div>
+  `;
+
+  // detail header
+  document.getElementById('mobileDetailHeader').innerHTML = `
+    <img src="${c.image}" alt="">
+    <div>
+      <div class="piece-name">${c.title}</div>
+      <div class="artist-sm">${c.artist}</div>
+    </div>
+    <div class="dh-right">${idx+1}/${total}</div>
+  `;
+
+  // detail body
+  const pills = pillsHTML(c.additionalLinks);
+  const additionalSection = pills ? `
+    <div class="mobile-detail-section">
+      <div class="cb-section-label">ADDITIONAL LINKS</div>
+      <div class="cb-additional-links">${pills}</div>
+    </div>
+  ` : '';
+
+  document.getElementById('mobileDetail').innerHTML = `
+    <div class="mobile-detail-section">
+      <div class="cb-section-label">ABOUT</div>
+      <div class="cb-date-created">Date Created: ${c.year}</div>
+      <div class="cb-about-text">${aboutHTML(c.about)}</div>
+      <a href="${c.learnMore}" target="_blank" class="cb-learn-more">Learn More →</a>
+    </div>
+    <div class="mobile-detail-section">
+      <div class="cb-section-label">WHY I LIKED IT</div>
+      <div class="cb-notes-text">${c.notes}</div>
+    </div>
+    ${additionalSection}
+  `;
+
+  // mobile footer
+  document.getElementById('mobileFooter').innerHTML = `
+    <button class="footer-icon-btn" data-action="email">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+    </button>
+    <button class="footer-icon-btn" data-action="instagram">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+    </button>
+    <button class="footer-icon-btn" data-action="link" data-cardid="${c.id}">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+    </button>
+    <button class="mobile-back-btn" id="mobileBackBtn" style="display:none">← Back</button>
+  `;
+
+  document.getElementById('mobileFooter').querySelectorAll('.footer-icon-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const a = btn.dataset.action;
+      if (a === 'email') { navigator.clipboard.writeText('hello@bytomo.com'); showToast('Email copied'); }
+      else if (a === 'instagram') window.open('https://www.instagram.com/farfromthis/', '_blank');
+      else if (a === 'link') copyLink(btn.dataset.cardid);
+    });
+  });
+
+  const backBtn = document.getElementById('mobileBackBtn');
+  if (backBtn) backBtn.addEventListener('click', mobileUnflip);
+}
+
+function mobileGo(dir) {
+  idx = mod(idx + dir, total);
+  renderMobile();
+}
+
+function mobileFlip() {
+  document.getElementById('mobileStackView').classList.add('hidden');
+  document.getElementById('mobileDetailView').classList.add('visible');
+  const backBtn = document.getElementById('mobileBackBtn');
+  if (backBtn) backBtn.style.display = 'block';
+  window.scrollTo(0, 0);
+}
+
+function mobileUnflip() {
+  document.getElementById('mobileStackView').classList.remove('hidden');
+  document.getElementById('mobileDetailView').classList.remove('visible');
+  const backBtn = document.getElementById('mobileBackBtn');
+  if (backBtn) backBtn.style.display = 'none';
+}
+
+// ─── SEARCH ───
+function openSearch() {
+  document.getElementById('searchOverlay').classList.add('open');
+  document.getElementById('searchInput').value = '';
+  renderSearchResults('');
+  setTimeout(() => document.getElementById('searchInput').focus(), 50);
+}
+function closeSearch() { document.getElementById('searchOverlay').classList.remove('open'); }
+
+function renderSearchResults(q) {
+  q = q.toLowerCase();
+  const results = q ? CARDS.filter(c =>
+    c.title.toLowerCase().includes(q) || c.artist.toLowerCase().includes(q) || c.location.toLowerCase().includes(q)
+  ) : CARDS;
+  document.getElementById('searchResults').innerHTML = results.map(c => `
+    <div class="search-result-item" data-id="${c.id}">
+      <img src="${c.image}" alt="">
+      <div>
+        <div class="search-result-name">${c.title}</div>
+        <div class="search-result-artist">${c.artist}</div>
+      </div>
+    </div>
+  `).join('');
+  document.querySelectorAll('.search-result-item').forEach(item => {
+    item.addEventListener('click', () => {
+      idx = CARDS.findIndex(c => c.id === parseInt(item.dataset.id));
+      flipped = false;
+      render();
+      closeSearch();
+    });
+  });
+}
+
+document.getElementById('searchInput').addEventListener('input', e => renderSearchResults(e.target.value));
+document.getElementById('btnSearchHeader').addEventListener('click', openSearch);
+document.getElementById('btnSearchSide').addEventListener('click', openSearch);
+document.getElementById('searchClose').addEventListener('click', closeSearch);
+document.getElementById('btnNext').addEventListener('click', () => go(1));
+document.getElementById('btnPrev').addEventListener('click', () => go(-1));
+
+document.addEventListener('keydown', e => {
+  if (document.getElementById('searchOverlay').classList.contains('open')) {
+    if (e.key === 'Escape') closeSearch();
+    return;
+  }
+  if (e.key === 'ArrowRight') { go(1); e.preventDefault(); }
+  else if (e.key === 'ArrowLeft') { go(-1); e.preventDefault(); }
+  else if (e.key === 'Enter') { doFlip(); e.preventDefault(); }
+  else if (e.key === 'Escape' && flipped) { flipped = false; document.querySelector('.card.top')?.classList.remove('flipped'); }
+  else if (e.key === '/') { openSearch(); e.preventDefault(); }
+});
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2000);
+}
+
+const p = new URLSearchParams(location.search).get('card');
+if (p) { const i = CARDS.findIndex(c => c.id === parseInt(p)); if (i !== -1) idx = i; }
+
+render();
+</script>
+</body>
+</html>
