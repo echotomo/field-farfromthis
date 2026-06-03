@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>About — FIELD.FARFROMTHIS</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f7f5f0;
+      --fg: #1a1a1a;
+      --fg-muted: #888;
+      --fg-subtle: #bbb;
+      --border: rgba(0,0,0,0.1);
+      --accent: #c8522a;
+      --serif: 'Jost', sans-serif;
+      --mono: 'DM Mono', monospace;
+      --h1: 700 24px/1.2 var(--serif);
+      --h3: 600 12px/1.2 var(--serif);
+      --h4: 400 12px/1.4 var(--mono);
+    }
+
+    html, body {
+      min-height: 100%;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: var(--mono);
+      font-size: 13px;
+    }
+
+    /* ─── HEADER ─── */
+    header {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px;
+      z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .site-title {
+      position: absolute; left: 50%; transform: translateX(-50%);
+      font: 700 13px/1 var(--serif);
+      letter-spacing: 0.14em;
+      text-decoration: none;
+      color: var(--fg);
+    }
+    .site-title:hover { color: var(--accent); }
+
+    .header-right {
+      display: flex; align-items: center;
+      margin-left: auto;
+    }
+    .header-right a {
+      font: var(--h4);
+      letter-spacing: 0.08em;
+      color: var(--accent);
+      text-decoration: none;
+      padding: 4px;
+    }
+    .header-right a:hover { text-decoration: underline; }
+
+    /* ─── CONTENT ─── */
+    main {
+      padding: 96px 20px 80px;
+      max-width: 640px;
+      margin: 0 auto;
+    }
+
+    .about-label {
+      font: var(--h3);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--fg-muted);
+      margin-bottom: 32px;
+    }
+
+    .about-section {
+      margin-bottom: 48px;
+    }
+
+    .about-section h2 {
+      font: var(--h1);
+      margin-bottom: 16px;
+    }
+
+    .about-section p {
+      font: var(--h4);
+      line-height: 1.9;
+      color: var(--fg);
+      margin-bottom: 14px;
+    }
+    .about-section p:last-child { margin-bottom: 0; }
+
+    .divider {
+      width: 32px;
+      height: 1.5px;
+      background: var(--accent);
+      margin: 40px 0;
+    }
+
+    .about-footer {
+      margin-top: 64px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center; gap: 20px;
+      flex-wrap: wrap;
+    }
+    .about-footer a {
+      font: var(--h4);
+      letter-spacing: 0.06em;
+      color: var(--fg-muted);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .about-footer a:hover { color: var(--fg); }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="index.html" class="site-title">FIELD.FARFROMTHIS</a>
+  <div class="header-right">
+    <a href="index.html">← Back to Stack</a>
+  </div>
+</header>
+
+<main>
+  <div class="about-label">About</div>
+
+  <div class="about-section">
+    <h2>Field</h2>
+    <p>Field.farfromthis is the archive of the artwork and artists that inspire me. I often take business cards and photos from the museums, gallery openings, and craft fairs I attend, but I then let the collected documentation languish on my device, or scattered across my studio shelves.</p>
+    <p>Field is an attempt to archive this ephemera, and share what I witnessed with others.</p>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="about-section">
+    <h2>Far From This</h2>
+    <p>Far From This is an online visual journal. This publication collects a series of illustrated works exploring the interactions of people, the spaces they occupy, and the objects they create. It is a synthesis of the content already made available across social media platforms and communities.</p>
+    <p>Far From This has always served as a creative metronome for the editor, maintaining a continuous creative rhythm. Over the course of its evolution, this publication advocates for those not yet certain how to express the hidden worlds they occupy, and to demonstrate that we can find our voice through practice.</p>
+  </div>
+
+  <div class="about-footer">
+    <a href="https://www.instagram.com/farfromthis/" target="_blank" rel="noopener">Instagram →</a>
+    <a href="mailto:hello@bytomo.com">hello@bytomo.com</a>
+  </div>
+</main>
+
+</body>
+</html>

@@ -49,19 +49,8 @@
       border-bottom: 1px solid var(--border);
     }
 
-    .btn-add {
-      display: flex; align-items: center; gap: 6px;
-      font: var(--h4);
-      letter-spacing: 0.03em;
-      color: var(--fg);
-      background: none;
-      border: 1px solid rgba(0,0,0,0.22);
-      border-radius: 20px;
-      padding: 5px 12px;
-      cursor: default;
-      opacity: 0.45;
-      white-space: nowrap;
-    }
+    /* btn-add hidden from all users */
+    .btn-add { display: none; }
 
     .site-title {
       position: absolute; left: 50%; transform: translateX(-50%);
@@ -69,21 +58,19 @@
       letter-spacing: 0.14em;
     }
 
+    /* header-right: about link only */
     .header-right {
-      display: flex; align-items: center; gap: 16px;
+      display: flex; align-items: center;
     }
-    .header-right button {
-      background: none; border: none; cursor: pointer;
+    .header-right a {
       font: var(--h4);
       letter-spacing: 0.08em;
       color: var(--fg-muted);
-      display: flex; align-items: center; gap: 5px;
+      text-decoration: none;
       padding: 4px;
       transition: color 0.15s;
-      white-space: nowrap;
     }
-    .header-right button:hover, .header-right button.active { color: var(--fg); }
-    .header-right button svg { width: 13px; height: 13px; flex-shrink: 0; }
+    .header-right a:hover { color: var(--fg); }
 
     /* ─── SEARCH OVERLAY ─── */
     .search-overlay {
@@ -157,7 +144,11 @@
       top: 50%; transform: translateY(-50%);
       width: 220px;
       display: flex; flex-direction: column; gap: 10px;
+      /* smooth metadata transitions */
+      transition: opacity 0.22s ease;
     }
+    .meta-sidebar.fading { opacity: 0; }
+
     .meta-sidebar .piece-title { font: var(--h1); }
     .meta-sidebar .artist-link {
       font: var(--h3);
@@ -172,7 +163,8 @@
     }
     .meta-row svg { width: 11px; height: 11px; flex-shrink: 0; margin-top: 2px; }
     .notes-label { font: var(--h3); color: var(--fg-muted); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 4px; }
-    .notes-text { font: italic 12px/1.6 Georgia, serif; color: var(--fg); }
+    /* Georgia replaced with DM Mono */
+    .notes-text { font: italic 12px/1.6 var(--mono); color: var(--fg); }
 
     .counter {
       position: absolute;
@@ -180,13 +172,17 @@
       top: 50%; transform: translateY(-50%);
       font: var(--h1); font-size: 26px;
       white-space: nowrap;
+      transition: opacity 0.22s ease;
     }
+    .counter.fading { opacity: 0; }
 
     /* ─── CARD STACK ─── */
     .card-stack {
       position: relative;
       width: var(--card-w);
       height: var(--card-h);
+      /* animate card dimensions for portrait/landscape */
+      transition: width 0.35s cubic-bezier(0.4,0,0.2,1), height 0.35s cubic-bezier(0.4,0,0.2,1);
     }
 
     .card {
@@ -195,7 +191,9 @@
       border-radius: 5px;
       transform-style: preserve-3d;
       perspective: 1200px;
-      transition: transform 0.45s cubic-bezier(0.4,0,0.2,1);
+      transition: transform 0.45s cubic-bezier(0.4,0,0.2,1),
+                  width 0.35s cubic-bezier(0.4,0,0.2,1),
+                  height 0.35s cubic-bezier(0.4,0,0.2,1);
       will-change: transform;
       user-select: none;
     }
@@ -218,19 +216,30 @@
 
     .card-icon-btn {
       position: absolute;
-      background: rgba(255,255,255,0.16);
-      border: none; border-radius: 50%;
+      background: white;
+      border: 1.5px solid #1a1a1a;
+      border-radius: 50%;
       width: 32px; height: 32px;
       display: flex; align-items: center; justify-content: center;
-      cursor: pointer; color: white;
-      backdrop-filter: blur(6px);
+      cursor: pointer; color: #1a1a1a;
       transition: background 0.15s;
       z-index: 2;
     }
-    .card-icon-btn:hover { background: rgba(255,255,255,0.28); }
+    .card-icon-btn:hover { background: #f0f0f0; }
     .card-icon-btn svg { width: 14px; height: 14px; pointer-events: none; }
-    .btn-send-back { top: 12px; left: 12px; }
-    .btn-flip      { top: 12px; right: 12px; }
+    .btn-flip { top: 18px; right: 18px; }
+    .btn-close-back {
+      background: white;
+      border: 1.5px solid #1a1a1a;
+      border-radius: 50%;
+      width: 32px; height: 32px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: #1a1a1a;
+      transition: background 0.15s;
+      flex-shrink: 0;
+    }
+    .btn-close-back:hover { background: #f0f0f0; }
+    .btn-close-back svg { width: 14px; height: 14px; pointer-events: none; }
 
     /* ─── CARD BACK ─── */
     .card-back {
@@ -244,6 +253,12 @@
       padding: 14px 18px;
       border-bottom: 1px solid var(--border);
       flex-shrink: 0;
+      position: relative;
+    }
+    /* counter and close button pinned to right as a unit */
+    .cb-header-right {
+      display: flex; align-items: center; gap: 10px;
+      margin-left: auto; flex-shrink: 0;
     }
     .cb-thumb { width: 52px; height: 40px; object-fit: cover; border-radius: 3px; flex-shrink: 0; }
     .cb-title-block { flex: 1; min-width: 0; }
@@ -252,13 +267,6 @@
     .cb-artist a { color: inherit; text-decoration: none; }
     .cb-artist a:hover { color: var(--accent); }
     .cb-counter { font: var(--h1); font-size: 15px; white-space: nowrap; flex-shrink: 0; }
-    .cb-share {
-      background: none; border: none; cursor: pointer;
-      color: var(--fg-muted); padding: 4px; flex-shrink: 0;
-      transition: color 0.15s;
-    }
-    .cb-share:hover { color: var(--fg); }
-    .cb-share svg { width: 14px; height: 14px; display: block; }
 
     .cb-body {
       flex: 1;
@@ -278,10 +286,23 @@
 
     .cb-divider { background: var(--border); }
 
+    /* ─── PORTRAIT CARD BACK (single column) ─── */
+    .card-back.portrait .cb-body {
+      grid-template-columns: 1fr;
+      overflow-y: auto;
+    }
+    .card-back.portrait .cb-divider { display: none; }
+    .card-back.portrait .cb-col {
+      overflow-y: visible;
+      border-bottom: 1px solid var(--border);
+    }
+    .card-back.portrait .cb-col:last-child { border-bottom: none; }
+
     .cb-section-label { font: var(--h3); letter-spacing: 0.1em; text-transform: uppercase; }
     .cb-date-created { font: var(--h4); color: var(--fg-muted); margin-bottom: 2px; }
     .cb-about-text { font: var(--h4); line-height: 1.7; color: var(--fg); }
-    .cb-notes-text { font: italic 11px/1.7 Georgia, serif; color: var(--fg); }
+    /* Georgia replaced with DM Mono */
+    .cb-notes-text { font: italic 11px/1.7 var(--mono); color: var(--fg); }
 
     .cb-learn-more {
       font: var(--h4); color: var(--accent);
@@ -380,6 +401,12 @@
     .exit-left  { animation: exitLeft  0.26s ease forwards; }
     .exit-right { animation: exitRight 0.26s ease forwards; }
 
+    /* ─── 4K / HIGH-DPI SCALING ─── */
+    @media (min-width: 1800px) {
+      .meta-sidebar { width: clamp(220px, 14vw, 340px); }
+      .counter { font-size: clamp(26px, 1.6vw, 40px); }
+    }
+
     /* ─── MOBILE ─── */
     @media (max-width: 768px) {
       body { overflow: auto; }
@@ -395,22 +422,8 @@
         padding-top: 48px;
       }
 
-      .mobile-nav {
-        display: flex; justify-content: center; gap: 28px;
-        padding: 10px 0;
-        border-bottom: 1px solid var(--border);
-        background: var(--bg);
-      }
-      .mobile-nav button {
-        background: none; border: none; cursor: pointer;
-        font: var(--h4); letter-spacing: 0.1em;
-        color: var(--fg-muted);
-        display: flex; align-items: center; gap: 5px;
-        padding: 4px 8px;
-        transition: color 0.15s;
-      }
-      .mobile-nav button.active { color: var(--fg); }
-      .mobile-nav button svg { width: 13px; height: 13px; }
+      /* mobile-nav (FULL/MAP/STACK) removed */
+      .mobile-nav { display: none; }
 
       .mobile-stack-view { display: block; }
       .mobile-detail-view { display: none; }
@@ -423,6 +436,7 @@
         display: flex; align-items: center; justify-content: center;
         padding: 32px 20px 24px;
         background: var(--bg);
+        position: relative;
       }
 
       .mobile-card-wrap {
@@ -458,6 +472,30 @@
       .mobile-card .card-icon-btn { width: 28px; height: 28px; }
       .mobile-card .card-icon-btn svg { width: 12px; height: 12px; }
 
+      /* mobile nav arrows flanking the card */
+      .mobile-nav-arrows {
+        position: absolute;
+        top: 50%; transform: translateY(-50%);
+        left: 0; right: 0;
+        display: flex; justify-content: space-between;
+        padding: 0 4px;
+        pointer-events: none;
+        z-index: 10;
+      }
+      .mobile-nav-arrow {
+        pointer-events: all;
+        background: white;
+        border: 1px solid rgba(0,0,0,0.18);
+        border-radius: 50%; width: 32px; height: 32px;
+        display: flex; align-items: center; justify-content: center;
+        cursor: pointer; color: var(--fg-muted);
+        box-shadow: 0 2px 6px rgba(0,0,0,0.12);
+        transition: color 0.15s, border-color 0.15s;
+        flex-shrink: 0;
+      }
+      .mobile-nav-arrow:hover { color: var(--fg); border-color: rgba(0,0,0,0.35); }
+      .mobile-nav-arrow svg { width: 14px; height: 14px; }
+
       /* mobile meta below stack */
       .mobile-meta {
         padding: 20px 20px 12px;
@@ -476,7 +514,8 @@
       }
       .mobile-meta .meta-row svg { width: 11px; height: 11px; flex-shrink: 0; margin-top: 2px; }
       .mobile-meta .notes-label { font: var(--h3); letter-spacing: 0.08em; text-transform: uppercase; margin: 10px 0 4px; }
-      .mobile-meta .notes-text { font: italic 13px/1.6 Georgia, serif; color: var(--fg); }
+      /* Georgia replaced with DM Mono */
+      .mobile-meta .notes-text { font: italic 13px/1.6 var(--mono); color: var(--fg); }
 
       /* mobile flipped = detail view */
       .mobile-detail {
@@ -492,7 +531,8 @@
       .mobile-detail-section .cb-section-label { font: var(--h3); letter-spacing: 0.1em; text-transform: uppercase; }
       .mobile-detail-section .cb-date-created { font: var(--h4); color: var(--fg-muted); }
       .mobile-detail-section .cb-about-text { font: var(--h4); line-height: 1.7; }
-      .mobile-detail-section .cb-notes-text { font: italic 13px/1.7 Georgia, serif; }
+      /* Georgia replaced with DM Mono */
+      .mobile-detail-section .cb-notes-text { font: italic 13px/1.7 var(--mono); }
       .mobile-detail-section .cb-learn-more {
         font: var(--h4); color: var(--accent); text-decoration: none;
         display: flex; align-items: center; gap: 4px;
@@ -549,20 +589,10 @@
 
 <!-- HEADER -->
 <header>
-  <button class="btn-add">
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    Add to stack
-  </button>
+  <!-- btn-add hidden from public -->
   <div class="site-title">FIELD.FARFROMTHIS</div>
   <div class="header-right">
-    <button id="btnSearchHeader">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      SEARCH
-    </button>
-    <button class="active">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="6" height="18" rx="1"/><rect x="9" y="3" width="13" height="18" rx="1"/></svg>
-      STACK
-    </button>
+    <a href="about.html">About</a>
   </div>
 </header>
 
@@ -601,15 +631,12 @@
 
 <!-- MOBILE VIEW -->
 <div class="mobile-view" id="mobileView">
-  <div class="mobile-nav">
-    <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><line x1="21" y1="3" x2="14" y2="10"/><line x1="3" y1="21" x2="10" y2="14"/></svg> FULL</button>
-    <button><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg> MAP</button>
-    <button class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5M2 12l10 5 10-5"/></svg> STACK</button>
-  </div>
+  <!-- mobile-nav (FULL/MAP/STACK) removed -->
 
   <!-- STACK VIEW -->
   <div class="mobile-stack-view" id="mobileStackView">
-    <div class="mobile-stack-scene">
+    <div class="mobile-stack-scene" id="mobileStackScene">
+      <!-- nav arrows injected by JS -->
       <div class="mobile-card-wrap" id="mobileCardWrap"></div>
     </div>
     <div class="mobile-meta" id="mobileMeta"></div>
@@ -650,8 +677,8 @@ const CARDS = [
     artistUrl: "https://www.haring.com/!/art-work/108-2",
     location: "Bronx, New York, NY",
     date: "May 9, 2022",
-    about: "Crack is Wack Playground earned its distinctive name after artist Keith Haring (1958–1990) painted the now-famous Crack Is Wack mural in 1986 on the handball court walls. The mural, done in Haring's signature style of thick black outlines, bright colors and intermingling, cartoon-like bodies, was painted to send a serious anti-drug message to the community.\n\nHaring painted this playground's mural on October 3, 1986 to call attention to the damage drugs can inflict on community welfare. He continued to create murals, sculptures, drawings, and paintings until he died of AIDS on February 16, 1990, at the age of 32. His artwork is highly prized throughout the world. The Keith Haring Foundation continues to educate the public about Haring's life and work and raises money for children's and AIDS charities.",
-    notes: "I saw this piece on my way upstate. I really needed to visit it in person. I found a bike path that carried me through Williamsburg, Manhattan, and into the Bronx. It was the first experience I had riding my bike through the area.",
+    about: "Crack is Wack Playground earned its distinctive name after artist Keith Haring (1958–1990) painted the now-famous Crack Is Wack mural in 1986 on the handball court walls. The mural, done in Haring's signature style of thick black outlines, bright colors and intermingling, cartoon-like bodies, was painted to send a serious anti-drug message to the community. Haring painted this playground's mural on October 3, 1986 to call attention to the damage drugs can inflict on community welfare. He continued to create murals, sculptures, drawings, and paintings until he died of AIDS on February 16, 1990, at the age of 32. His artwork is highly prized throughout the world. The Keith Haring Foundation, which Haring created shortly before his death, continues to educate the public about Haring's life and work and raises money for children's and AIDS charities.",
+    notes: "I saw this piece on my way up state. I really needed to visit it in person. I found a bike path that carried me through Williamsburg, Manhattan, and into the Bronx. It was the first experience I had riding my bike through the area.",
     learnMore: "https://www.nycgovparks.org/parks/crack-is-wack-playground/history",
     additionalLinks: "https://www.haring.com/!/art-work/108-2"
   },
@@ -664,8 +691,8 @@ const CARDS = [
     artistUrl: "https://www.walkerart.org/whats-on/suzanne-jackson-what-is-love/",
     location: "Walker Museum",
     date: "May 24, 2026",
-    about: "What Is Love traces painter Suzanne Jackson's (US, b. 1944) lifelong devotion to beauty as a political force. As the first major museum retrospective devoted to the artist's career, the exhibition spans six decades of work and highlights her evolving engagement with poetry, dance, and theater.\n\nAt the center of Jackson's practice is a dedication to both the earthly and spiritual dimensions of love. Her joyful experimentations with color, light, and materiality refuse stereotypical notions of Blackness, insisting instead on complexity and tenderness.",
-    notes: "This exhibition captured the evolution of Suzanne Jackson's life's work from distinctive human figures to post-canvas, suspended pigments and ephemera. Loved ones, history, and memories seemed to melt into amorphic sculpture. I was moved by the transformations of her memories.",
+    about: "What Is Love traces painter Suzanne Jackson's (US, b. 1944) lifelong devotion to beauty as a political force. As the first major museum retrospective devoted to the artist's career, the exhibition spans six decades of work and highlights her evolving engagement with poetry, dance, and theater.\n\nAt the center of Jackson's practice is a dedication to both the earthly and spiritual dimensions of love. Her joyful experimentations with color, light, and materiality refuse stereotypical notions of Blackness, insisting instead on complexity and tenderness. In her early figurative works, loose washes of acrylic paint reveal a reverence for memory and ancestral lineage. In later works, representational forms give way to abstraction. Textured layers of paper evoke ancient topographies, while luminous acrylic forms hang like dreams suspended midair. Guided by the notion that beauty is an act of care and a means of survival, Jackson's work invites us to consider the very nature of love.",
+    notes: "This exhibition captured the evolution of Suzanne Jackson's life's work from distinctive human figures to post-canvas, suspended pigments and ephemera. Loved ones, history, and memories seemed to melt into amorphic sculpture. I was moved by the transformations of her memories, and the stark contrast of her early figurative works into something unrecognizable to the outside viewer.",
     learnMore: "https://www.walkerart.org/whats-on/suzanne-jackson-what-is-love/",
     additionalLinks: "https://www.walkerart.org/whats-on/suzanne-jackson-what-is-love-opening-day-talk/"
   },
@@ -678,7 +705,7 @@ const CARDS = [
     artistUrl: "https://miguelabreugallery.com/exhibitions/recto-verso/",
     location: "Whitney Museum",
     date: "April 10, 2026",
-    about: "To create the relief sculptures on view here, Nour Mobarak made casts of her body using resin, a synthetic material, and mycelium, the root-like structure of a fungus. Her series Recto Verso reduces the body to a form — a vehicle for exploring light, color, and space.\n\nIn Reproductive Logistics 4, Mobarak uses a cast of her pregnant body as a lens through which the room and bodies within it are mirrored, flipped, and distorted. She conceived the work as a meditation on how factors beyond our control can determine biological reproduction as well as artistic creation.",
+    about: "To create the relief sculptures on view here, Nour Mobarak made casts of her body using resin, a synthetic material, and mycelium, the root-like structure of a fungus. Her series Recto Verso reduces the body to a form — a vehicle for exploring light, color, and space.\n\nIn Reproductive Logistics 4, Mobarak uses a cast of her pregnant body as a lens through which the room and bodies within it are mirrored, flipped, and distorted. She conceived the work as a meditation on how factors beyond our control can determine biological reproduction as well as artistic creation. Broad's Cast (Montage) comprises recordings Mobarak made by inserting a microphone inside her vaginal canal to listen to the world and her own body before, during, and after her pregnancy. Some of the sounds include phone calls, making music, doctor's appointments, and also what she calls the 'almost industrial sounds' of human life.",
     notes: "I just saw a blood clot and it was instantly my favorite piece at the biennale.",
     learnMore: "https://whitney.org/exhibitions/2026-biennial/art",
     additionalLinks: "https://miguelabreugallery.com/exhibitions/recto-verso/"
@@ -692,7 +719,7 @@ const CARDS = [
     artistUrl: "https://samiahalaby.com/digital/",
     location: "Whitney Museum",
     date: "April 10, 2026",
-    about: "In the 1980s — three decades into her career as an abstract painter — Samia Halaby observed that the most historically ambitious paintings had always used the technology of their time and began to use a personal computer in her own work. After teaching herself BASIC and C, Halaby used a Commodore Amiga 1000 to create what she calls \"kinetic paintings.\" She continues programming to explore the motion, light, and transformation that much abstract art has long suggested.",
+    about: "In the 1980s — three decades into her career as an abstract painter — Samia Halaby observed that the most historically ambitious paintings had always used the technology of their time and began to use a personal computer in her own work. After teaching herself the programming languages BASIC and C, Halaby used a Commodore Amiga 1000 to create what she calls \"kinetic paintings.\" She continues programming on a PC to explore the motion, light, and transformation that much abstract art has long suggested.",
     notes: "I loved how Halaby embraced the technology of the day to explore how her art would manifest.",
     learnMore: "https://whitney.org/exhibitions/2026-biennial/art?section=25",
     additionalLinks: "https://samiahalaby.com/digital/"
@@ -706,10 +733,24 @@ const CARDS = [
     artistUrl: "https://www.guggenheim.org/exhibition/hilma-af-klint",
     location: "Guggenheim Museum",
     date: "April 10, 2026",
-    about: "Hilma is often sensationalized as a mystical hermit artist who spoke to ghosts, or as the inventor of abstract art — both of which do a disservice to an artist who worked with such intentionality and purpose throughout her life.\n\nHilma's interest in the unseen, science, religion, clairvoyance, and meditation would lead her to find the connective threads between representation and abstraction. The Ten Largest — ten giant, powerful, and vibrant paintings — have a universal message everyone can connect to.",
+    about: "Hilma is often sensationalized as a mystical hermit artist who spoke to ghosts, or as the inventor of abstract art — both of which do a disservice to an artist who worked with such intentionality and purpose throughout her life.\n\nHilma's interest in the unseen, science, religion, clairvoyance, and meditation would lead her to find the connective threads between representation and abstraction. For example, like in The Ten Largest — ten giant, powerful, and vibrant paintings — while deeply personal to her, have a universal message everyone can connect to.",
     notes: "I went to this exhibit at the Guggenheim with Marissa and it was a beautiful night.",
     learnMore: "https://www.guggenheim.org/exhibition/hilma-af-klint",
     additionalLinks: "https://www.artslicepod.com/episodes/the-ten-largest-hilma-af-klint"
+  },
+  {
+    id: 6,
+    image: "images/image-6-perlstein.png",
+    title: "Untitled Planter",
+    year: "2026",
+    artist: "Sacha Perlstein",
+    artistUrl: "https://www.sachaperlstein.com/",
+    location: "Greenpoint Open Studios",
+    date: "May 31, 2026",
+    about: "Sacha Perlstein (they/them) is a Brooklyn-based photographer who specializes in fashion, beauty, lifestyle, and portraiture.\n\nThey have been in the industry for over a decade and their work can regularly be seen in countless publications and on the internet. Their easygoing demeanor paired with an innate visual sense has generated a long list of repeat clients.",
+    notes: "I met Sacha in the first stop of the Greenpoint Open Studios tour, 2026. They were so open and clearly excited about their craft. From the full collection they had on display, I was drawn to the striped and textured planter. At home I have many a baby pothos ready for a new substrate, so I'm excited to start repotting with Sacha's addition.",
+    learnMore: "https://www.sachaperlstein.com/",
+    additionalLinks: "https://www.instagram.com/sachaperlstein/"
   }
 ];
 
@@ -717,6 +758,9 @@ let idx = 0;
 let flipped = false;
 let busy = false;
 const total = CARDS.length;
+
+// Cache of detected image orientations: id -> 'landscape' | 'portrait'
+const orientationCache = {};
 
 function mod(n, m) { return ((n % m) + m) % m; }
 
@@ -730,17 +774,78 @@ function domainLabel(url) {
 function pillsHTML(linksStr) {
   if (!linksStr || !linksStr.trim()) return '';
   const links = linksStr.split('|').map(s => s.trim()).filter(Boolean);
-  return links.map(url => `<a href="${url}" target="_blank" class="cb-pill">${domainLabel(url)}</a>`).join('');
+  return links.map(url => `<a href="${url}" target="_blank" rel="noopener" class="cb-pill">${domainLabel(url)}</a>`).join('');
 }
 
 function aboutHTML(text) {
-  return text.split('\n\n').map(p => `<p style="margin-bottom:8px;last-child{margin-bottom:0}">${p}</p>`).join('');
+  return text.split('\n\n').map(p => `<p style="margin-bottom:8px">${p}</p>`).join('');
+}
+
+// Detect orientation of an image by loading it, returns promise resolving 'portrait' or 'landscape'
+function detectOrientation(card) {
+  if (orientationCache[card.id] !== undefined) {
+    return Promise.resolve(orientationCache[card.id]);
+  }
+  return new Promise(resolve => {
+    const img = new Image();
+    img.onload = () => {
+      const o = img.naturalHeight > img.naturalWidth ? 'portrait' : 'landscape';
+      orientationCache[card.id] = o;
+      resolve(o);
+    };
+    img.onerror = () => {
+      orientationCache[card.id] = 'landscape';
+      resolve('landscape');
+    };
+    img.src = card.image;
+  });
+}
+
+// Pre-load orientations for all cards on startup
+function preloadOrientations() {
+  CARDS.forEach(c => detectOrientation(c));
+}
+
+// Apply card stack dimensions based on orientation of current card
+function applyCardDimensions(orientation) {
+  const stack = document.getElementById('cardStack');
+  const cards = stack.querySelectorAll('.card');
+  const isPortrait = orientation === 'portrait';
+
+  // Measure the available stage area to size cards responsively
+  const stage = document.querySelector('.stage');
+  const stageW = stage ? stage.offsetWidth : window.innerWidth;
+  const stageH = stage ? stage.offsetHeight : window.innerHeight - 48;
+
+  let w, h;
+  if (isPortrait) {
+    // Portrait: fit within stage with comfortable margin, use 3:4 ratio
+    const maxH = Math.round(stageH * 0.78);
+    const maxW = Math.round(stageW * 0.32);
+    // Pick whichever constraint is tighter
+    h = Math.min(maxH, Math.round(maxW * (4/3)));
+    w = Math.round(h * (3/4));
+  } else {
+    // Landscape: use 4:3 ratio, fit within stage
+    const maxW = Math.round(stageW * 0.38);
+    const maxH = Math.round(stageH * 0.72);
+    w = Math.min(maxW, Math.round(maxH * (4/3)));
+    h = Math.round(w * (3/4));
+  }
+
+  stack.style.width = w + 'px';
+  stack.style.height = h + 'px';
+  cards.forEach(card => {
+    card.style.width = w + 'px';
+    card.style.height = h + 'px';
+  });
 }
 
 // ─── DESKTOP CARD ───
-function buildCard(cardData, role) {
+function buildCard(cardData, role, orientation) {
   const div = document.createElement('div');
   div.className = `card ${role}`;
+  const isPortrait = orientation === 'portrait';
 
   const pills = pillsHTML(cardData.additionalLinks);
   const additionalSection = pills ? `
@@ -751,31 +856,30 @@ function buildCard(cardData, role) {
   div.innerHTML = `
     <div class="card-face card-front">
       <img src="${cardData.image}" alt="${cardData.title}">
-      <button class="card-icon-btn btn-send-back" data-tip="Next card">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
-      </button>
       <button class="card-icon-btn btn-flip" data-tip="Flip card (Enter)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 014-4h12"/></svg>
       </button>
     </div>
-    <div class="card-face card-back">
+    <div class="card-face card-back${isPortrait ? ' portrait' : ''}">
       <div class="cb-header">
         <img class="cb-thumb" src="${cardData.image}" alt="">
         <div class="cb-title-block">
           <div class="cb-piece-name">${cardData.title}</div>
-          <div class="cb-artist"><a href="${cardData.artistUrl}" target="_blank">${cardData.artist} →</a></div>
+          <div class="cb-artist"><a href="${cardData.artistUrl}" target="_blank" rel="noopener">${cardData.artist} →</a></div>
         </div>
-        <div class="cb-counter">${CARDS.indexOf(cardData)+1}/${total}</div>
-        <button class="cb-share" data-tip="Share this card">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 12v8a2 2 0 002 2h12a2 2 0 002-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
-        </button>
+        <div class="cb-header-right">
+          <div class="cb-counter">${CARDS.indexOf(cardData)+1}/${total}</div>
+          <button class="btn-close-back" data-tip="Return to image (Esc)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
       </div>
       <div class="cb-body">
         <div class="cb-col">
           <div class="cb-section-label">ABOUT</div>
           <div class="cb-date-created">Date Created: ${cardData.year}</div>
           <div class="cb-about-text">${aboutHTML(cardData.about)}</div>
-          <a href="${cardData.learnMore}" target="_blank" class="cb-learn-more">Learn More →</a>
+          <a href="${cardData.learnMore}" target="_blank" rel="noopener" class="cb-learn-more">Learn More →</a>
         </div>
         <div class="cb-divider"></div>
         <div class="cb-col">
@@ -785,40 +889,44 @@ function buildCard(cardData, role) {
         </div>
       </div>
       <div class="cb-footer">
-        <button class="footer-icon-btn" data-action="email" data-tip="Copy email to ask questions">
+        <button class="footer-icon-btn" data-action="email" data-tip="Copy email address">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
         </button>
-        <button class="footer-icon-btn" data-action="instagram" data-tip="Visit Far From This instagram">
+        <button class="footer-icon-btn" data-action="instagram" data-tip="Visit Far From This on Instagram">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
         </button>
-        <button class="footer-icon-btn" data-action="link" data-cardid="${cardData.id}" data-tip="Copy link to this card">
+        <button class="footer-icon-btn" data-action="link" data-cardid="${cardData.id}" data-tip="Copy deep link to this card">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
         </button>
       </div>
     </div>
   `;
 
+  // Clicking card front navigates (no btn-send-back anymore)
   div.querySelector('.card-front').addEventListener('click', e => {
     if (e.target.closest('.card-icon-btn')) return;
     if (role === 'top' && !flipped) go(1);
   });
-  div.querySelector('.btn-send-back').addEventListener('click', e => { e.stopPropagation(); if (role === 'top') go(1); });
   div.querySelector('.btn-flip').addEventListener('click', e => { e.stopPropagation(); if (role === 'top') doFlip(); });
-  div.querySelector('.cb-share').addEventListener('click', e => { e.stopPropagation(); copyLink(cardData.id); });
+  div.querySelector('.btn-close-back').addEventListener('click', e => { e.stopPropagation(); if (role === 'top') doFlip(); });
 
   div.querySelectorAll('.footer-icon-btn').forEach(btn => {
     btn.addEventListener('click', e => {
       e.stopPropagation();
       const a = btn.dataset.action;
-      if (a === 'email') { navigator.clipboard.writeText('hello@bytomo.com'); showToast('Email copied'); }
-      else if (a === 'instagram') window.open('https://www.instagram.com/farfromthis/', '_blank');
-      else if (a === 'link') copyLink(btn.dataset.cardid);
+      if (a === 'email') {
+        navigator.clipboard.writeText('hello@bytomo.com').then(() => showToast('Email copied'));
+      } else if (a === 'instagram') {
+        window.open('https://www.instagram.com/farfromthis/', '_blank', 'noopener');
+      } else if (a === 'link') {
+        copyLink(btn.dataset.cardid);
+      }
     });
   });
 
   // global tooltip
   div.querySelectorAll('[data-tip]').forEach(el => {
-    el.addEventListener('mouseenter', e => {
+    el.addEventListener('mouseenter', () => {
       const tip = document.getElementById('globalTooltip');
       tip.textContent = el.dataset.tip;
       const r = el.getBoundingClientRect();
@@ -837,16 +945,22 @@ function buildCard(cardData, role) {
 
 function copyLink(cardId) {
   const url = location.href.split('?')[0] + '?card=' + cardId;
-  navigator.clipboard.writeText(url);
-  showToast('Link copied');
+  navigator.clipboard.writeText(url).then(() => showToast('Link copied'));
 }
 
 function render() {
   const stack = document.getElementById('cardStack');
   stack.querySelectorAll('.card').forEach(c => c.remove());
-  ['behind2','behind1','top'].forEach((role, i) => {
-    const el = buildCard(CARDS[mod(idx + (2-i), total)], role);
-    stack.insertBefore(el, stack.querySelector('.nav-arrows'));
+  // Get current card orientation first, then build cards
+  detectOrientation(CARDS[idx]).then(orientation => {
+    ['behind2','behind1','top'].forEach((role, i) => {
+      const cardData = CARDS[mod(idx + (2-i), total)];
+      // Behind cards use their own orientation for shape, but back layout uses current
+      const o = (role === 'top') ? orientation : (orientationCache[cardData.id] || 'landscape');
+      const el = buildCard(cardData, role, o);
+      stack.insertBefore(el, stack.querySelector('.nav-arrows'));
+    });
+    applyCardDimensions(orientation);
   });
   updateMeta();
   updateCounter();
@@ -856,12 +970,25 @@ function render() {
 function go(dir) {
   if (busy) return;
   busy = true;
+
+  // Fade out sidebar and counter smoothly
+  const sidebar = document.getElementById('metaSidebar');
+  const counter = document.getElementById('counter');
+  sidebar.classList.add('fading');
+  counter.classList.add('fading');
+
   const top = document.querySelector('.card.top');
   top.classList.add(dir === 1 ? 'exit-left' : 'exit-right');
+
   setTimeout(() => {
     idx = mod(idx + dir, total);
     flipped = false;
     render();
+    // Fade back in
+    requestAnimationFrame(() => {
+      sidebar.classList.remove('fading');
+      counter.classList.remove('fading');
+    });
     busy = false;
   }, 240);
 }
@@ -875,7 +1002,7 @@ function updateMeta() {
   const c = CARDS[idx];
   document.getElementById('metaSidebar').innerHTML = `
     <div class="piece-title">${c.title}</div>
-    <a href="${c.artistUrl}" target="_blank" class="artist-link">${c.artist} →</a>
+    <a href="${c.artistUrl}" target="_blank" rel="noopener" class="artist-link">${c.artist} →</a>
     <div class="meta-row">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
       ${c.location}
@@ -885,7 +1012,7 @@ function updateMeta() {
       ${c.date}
     </div>
     <div class="notes-label">NOTES</div>
-    <div class="notes-text">${CARDS[idx].notes}</div>
+    <div class="notes-text">${c.notes}</div>
   `;
 }
 
@@ -907,24 +1034,39 @@ function renderMobile() {
     div.innerHTML = `<img src="${cd.image}" alt="${cd.title}">`;
     if (role === 'top-card') {
       div.innerHTML += `
-        <button class="card-icon-btn btn-send-back" style="top:10px;left:10px">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 014-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 01-4 4H3"/></svg>
-        </button>
         <button class="card-icon-btn btn-flip" style="top:10px;right:10px">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 14 20 9 15 4"/><path d="M4 20v-7a4 4 0 014-4h12"/></svg>
         </button>
       `;
-      div.querySelector('.btn-send-back').addEventListener('click', e => { e.stopPropagation(); mobileGo(1); });
       div.querySelector('.btn-flip').addEventListener('click', e => { e.stopPropagation(); mobileFlip(); });
-      div.addEventListener('click', () => mobileGo(1));
+      // tapping card image area navigates
+      div.addEventListener('click', e => { if (!e.target.closest('.card-icon-btn')) mobileGo(1); });
     }
     wrap.appendChild(div);
   });
 
+  // inject mobile nav arrows into scene (flanking the card wrap)
+  const scene = document.getElementById('mobileStackScene');
+  // remove old arrows if present
+  scene.querySelectorAll('.mobile-nav-arrows').forEach(el => el.remove());
+  const arrowsDiv = document.createElement('div');
+  arrowsDiv.className = 'mobile-nav-arrows';
+  arrowsDiv.innerHTML = `
+    <button class="mobile-nav-arrow" id="mobilePrev">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+    </button>
+    <button class="mobile-nav-arrow" id="mobileNext">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+    </button>
+  `;
+  scene.insertBefore(arrowsDiv, wrap);
+  arrowsDiv.querySelector('#mobilePrev').addEventListener('click', () => mobileGo(-1));
+  arrowsDiv.querySelector('#mobileNext').addEventListener('click', () => mobileGo(1));
+
   // meta below stack
   document.getElementById('mobileMeta').innerHTML = `
     <div class="piece-title">${c.title}</div>
-    <a href="${c.artistUrl}" target="_blank" class="artist-link">${c.artist} →</a>
+    <a href="${c.artistUrl}" target="_blank" rel="noopener" class="artist-link">${c.artist} →</a>
     <div class="meta-row">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg>
       ${c.location}
@@ -961,7 +1103,7 @@ function renderMobile() {
       <div class="cb-section-label">ABOUT</div>
       <div class="cb-date-created">Date Created: ${c.year}</div>
       <div class="cb-about-text">${aboutHTML(c.about)}</div>
-      <a href="${c.learnMore}" target="_blank" class="cb-learn-more">Learn More →</a>
+      <a href="${c.learnMore}" target="_blank" rel="noopener" class="cb-learn-more">Learn More →</a>
     </div>
     <div class="mobile-detail-section">
       <div class="cb-section-label">WHY I LIKED IT</div>
@@ -987,9 +1129,13 @@ function renderMobile() {
   document.getElementById('mobileFooter').querySelectorAll('.footer-icon-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       const a = btn.dataset.action;
-      if (a === 'email') { navigator.clipboard.writeText('hello@bytomo.com'); showToast('Email copied'); }
-      else if (a === 'instagram') window.open('https://www.instagram.com/farfromthis/', '_blank');
-      else if (a === 'link') copyLink(btn.dataset.cardid);
+      if (a === 'email') {
+        navigator.clipboard.writeText('hello@bytomo.com').then(() => showToast('Email copied'));
+      } else if (a === 'instagram') {
+        window.open('https://www.instagram.com/farfromthis/', '_blank', 'noopener');
+      } else if (a === 'link') {
+        copyLink(btn.dataset.cardid);
+      }
     });
   });
 
@@ -1051,7 +1197,6 @@ function renderSearchResults(q) {
 }
 
 document.getElementById('searchInput').addEventListener('input', e => renderSearchResults(e.target.value));
-document.getElementById('btnSearchHeader').addEventListener('click', openSearch);
 document.getElementById('btnSearchSide').addEventListener('click', openSearch);
 document.getElementById('searchClose').addEventListener('click', closeSearch);
 document.getElementById('btnNext').addEventListener('click', () => go(1));
@@ -1076,9 +1221,12 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2000);
 }
 
+// Handle deep link ?card=N
 const p = new URLSearchParams(location.search).get('card');
 if (p) { const i = CARDS.findIndex(c => c.id === parseInt(p)); if (i !== -1) idx = i; }
 
+// Pre-load all image orientations, then render
+preloadOrientations();
 render();
 </script>
 </body>
